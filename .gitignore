@@ -16,3 +16,4 @@ out
 gen
 build/
 .gradle/
+kotlin-js-store/
