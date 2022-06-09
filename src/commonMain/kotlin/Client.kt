@@ -1,31 +1,19 @@
+import entity.*
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class Client private constructor(
     private val userID: String,
     private val endpoint: String = "https://push.learningman.top"
 ) {
-    data class Message(
-        val content: String,
-        val title: String?,
-        val long: String?
-    )
 
-    @Serializable
-    data class SendResult(
-        val id: String,
-        val user_id: String,
-        val content: String,
-        val title: String,
-        val long: String,
-        val created_at: String
-    )
+
+
 
     private val client = HttpClient()
 
