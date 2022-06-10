@@ -18,3 +18,4 @@ gen
 build/
 .gradle/
 kotlin-js-store/
+local.properties

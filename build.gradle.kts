@@ -81,7 +81,7 @@ tasks.forEach {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 30
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 24
@@ -109,15 +109,19 @@ val props = Properties().apply {
     load(FileInputStream(File(rootProject.rootDir, "local.properties")))
 }
 
-fun getKey(key: String): String {
-    return props.getProperty(key) ?: (System.getenv(key.mapToEnv())
+fun getKey(key: String, base64:Boolean = false): String {
+    val value = props.getProperty(key) ?: (System.getenv(key.mapToEnv())
         ?: throw IllegalArgumentException("$key is not defined"))
+    return if (base64){
+        // decode base64
+        Base64.getDecoder().decode(value).toString(Charsets.UTF_8)
+    } else {
+        value
+    }
 }
 
 val mavenUser = getKey("maven.user")
 val mavenPassword = getKey("maven.password")
-val signingKey = getKey("signing.key")
-val signingPassword = getKey("signing.password")
 
 val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
@@ -165,6 +169,8 @@ publishing {
 }
 
 signing {
+    val signingKey = getKey("signing.key", true)
+    val signingPassword = getKey("signing.password")
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
 }
