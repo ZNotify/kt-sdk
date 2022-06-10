@@ -4,15 +4,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.*
 
-plugins {
-    kotlin("multiplatform") version "1.6.21"
-    kotlin("plugin.serialization") version "1.6.21"
-    id("kotlinx-atomicfu") version "0.17.3"
-    id("com.android.library")
-    id("maven-publish")
-    id("signing")
-}
-
 group = "dev.zxilly"
 version = "1.0-SNAPSHOT"
 
@@ -21,35 +12,35 @@ repositories {
     mavenCentral()
 }
 
-ext["kotlin_version"] = "1.6.21"
+plugins {
+    kotlin("multiplatform") version "1.7.0"
+    kotlin("plugin.serialization") version "1.7.0"
+    id("com.android.library")
+    id("maven-publish")
+    id("signing")
+}
 
 kotlin {
     sourceSets.all {
         languageSettings.apply {
-            languageVersion = "1.6"
-            apiVersion = "1.6"
+            languageVersion = "1.7"
+            apiVersion = "1.7"
         }
     }
-    jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-        testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
-        }
-    }
-    js(BOTH) {
-        browser {
-            commonWebpackConfig {
-                cssSupport.enabled = true
+
+    targets {
+        jvm {
+            compilations.all {
+                kotlinOptions.jvmTarget = "1.8"
+            }
+            testRuns["test"].executionTask.configure {
+                useJUnitPlatform()
             }
         }
-        nodejs()
-    }
 
-
-    android("android") {
-        publishLibraryVariants("release", "debug")
+        android("android") {
+            publishLibraryVariants("release", "debug")
+        }
     }
 
     sourceSets {
@@ -58,6 +49,7 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
             }
@@ -76,29 +68,37 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 rootProject
-                implementation(kotlin("stdlib"))
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
-            }
-        }
-        val androidTest by getting {
-            dependencies {
-                implementation("junit:junit:4.13.2")
             }
         }
     }
 }
 
+tasks.forEach {
+    if (it.name.startsWith("lint")) {
+        it.enabled = false
+    }
+}
+
 android {
-    compileSdkVersion(32)
+    compileSdk = 31
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdkVersion(24)
-        targetSdkVersion(32)
+        minSdk = 24
+        targetSdk = 32
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    lint {
+        isCheckTestSources = false
+        isCheckReleaseBuilds = false
+        isAbortOnError = false
+    }
+
+    buildToolsVersion = "30.0.3"
 }
 
 fun String.mapToEnv(): String {
