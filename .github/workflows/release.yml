@@ -3,6 +3,12 @@ name: Maven Release
 on:
   workflow_dispatch:
 
+env:
+  MAVEN_USER: ${{ secrets.MAVEN_USER }}
+  MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+  SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+  SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,8 +37,3 @@ jobs:
         uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
         with:
           arguments: publishAllPublicationsToSonatypeRepository
-        env:
-          MAVEN_USER: ${{ secrets.MAVEN_USER }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
