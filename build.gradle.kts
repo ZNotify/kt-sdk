@@ -106,7 +106,10 @@ fun String.mapToEnv(): String {
 }
 
 val props = Properties().apply {
-    load(FileInputStream(File(rootProject.rootDir, "local.properties")))
+    val file = File(rootProject.rootDir, "local.properties")
+    if (file.exists()){
+        load(FileInputStream(file))
+    }
 }
 
 fun getKey(key: String, base64:Boolean = false): String {
