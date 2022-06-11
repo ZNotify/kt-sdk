@@ -4,6 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
@@ -11,10 +12,6 @@ class Client private constructor(
     private val userID: String,
     private val endpoint: String = "https://push.learningman.top"
 ) {
-
-
-
-
     private val client = HttpClient()
 
     private suspend fun check() {
@@ -76,6 +73,15 @@ class Client private constructor(
         if (!resp.ok()) {
             throw Error("Report failed\n${resp.bodyAsText()}")
         }
+    }
+
+    suspend fun <T> fetchMessage(postProcessor: List<Message>.() -> List<T>) = wrap {
+        val resp = client.get("$endpoint/$userID/record")
+        if (!resp.ok()) {
+            throw Error("Fetch failed\n${resp.bodyAsText()}")
+        }
+        val messages = Json.decodeFromString(ListSerializer(Message.serializer()), resp.bodyAsText())
+        postProcessor(messages)
     }
 
     companion object {
