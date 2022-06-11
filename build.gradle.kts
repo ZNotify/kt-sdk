@@ -5,7 +5,20 @@ import java.io.FileInputStream
 import java.util.*
 
 group = "dev.zxilly"
-version = "1.0"
+if (isCI()) {
+    when (System.getenv("GITHUB_EVENT_NAME")) {
+        "release" -> {
+            val tag = System.getenv("GITHUB_REF_NAME")
+            if (tag.isNullOrBlank()) {
+                throw IllegalArgumentException("GITHUB_REF_NAME is not set")
+            }
+            version = tag
+            logger.info("Release: $tag")
+        }
+    }
+} else {
+    version = getKey("library.version", strict = true)
+}
 
 repositories {
     google()
@@ -15,6 +28,7 @@ repositories {
 plugins {
     kotlin("multiplatform") version "1.7.0"
     kotlin("plugin.serialization") version "1.7.0"
+    id("io.codearte.nexus-staging") version "0.30.0"
     id("com.android.library")
     id("maven-publish")
     id("signing")
@@ -74,9 +88,11 @@ kotlin {
     }
 }
 
-tasks.forEach {
-    if (it.name.startsWith("lint")) {
-        it.enabled = false
+project.gradle.taskGraph.whenReady {
+    project.tasks.forEach {
+        if (it.name.contains("lint")) {
+            it.enabled = false
+        }
     }
 }
 
@@ -93,6 +109,7 @@ android {
     }
 
     lint {
+        isIgnoreTestSources = true
         isCheckTestSources = false
         isCheckReleaseBuilds = false
         isAbortOnError = false
@@ -105,17 +122,38 @@ fun String.mapToEnv(): String {
     return this.toUpperCase().replace(".", "_")
 }
 
-val props = Properties().apply {
-    val file = File(rootProject.rootDir, "local.properties")
-    if (file.exists()){
-        load(FileInputStream(file))
+lateinit var propsCache: Properties
+val props: Properties
+    get() {
+        if (!::propsCache.isInitialized) {
+            propsCache = Properties().apply {
+                val file = File(rootProject.rootDir, "local.properties")
+                if (file.exists()) {
+                    load(FileInputStream(file))
+                }
+            }
+        }
+        return propsCache
     }
-}
 
-fun getKey(key: String, base64:Boolean = false): String {
-    val value = props.getProperty(key) ?: (System.getenv(key.mapToEnv())
-        ?: throw IllegalArgumentException("$key is not defined"))
-    return if (base64){
+fun isCI() = System.getenv("CI") != null
+
+fun getKey(key: String, base64: Boolean = false, strict: Boolean = false): String {
+    var value: String? = if (isCI()) {
+        System.getenv(key.mapToEnv())
+    } else {
+        props.getProperty(key)
+    }
+    if (value == null) {
+        val warn = "$key is not defined"
+        if (strict) {
+            throw GradleException(warn)
+        } else {
+            logger.warn(warn)
+            value = ""
+        }
+    }
+    return if (base64) {
         // decode base64
         Base64.getDecoder().decode(value).toString(Charsets.UTF_8)
     } else {
@@ -125,18 +163,26 @@ fun getKey(key: String, base64:Boolean = false): String {
 
 val mavenUser = getKey("maven.user")
 val mavenPassword = getKey("maven.password")
+val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+
+val releaseUrl = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
 
 val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
+}
+
+nexusStaging {
+    serverUrl = "https://s01.oss.sonatype.org/service/local/"
+    username = mavenUser
+    password = mavenPassword
 }
 
 publishing {
     repositories {
         maven {
             name = "sonatype"
-            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+            url = releaseUrl
             credentials {
                 username = mavenUser
                 password = mavenPassword
