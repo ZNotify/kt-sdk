@@ -11,20 +11,20 @@ private suspend fun getClient(userID: String): Result<Client> {
     }
 }
 
-suspend fun send(userID: String, message: Message): Result<SendResult> {
+suspend fun send(userID: String, message: Message): Result<MessageItem> {
     return getClient(userID).getOrElse {
         return Result.failure(it)
     }.send(message)
 }
 
-suspend fun send(userID: String, content: String): Result<SendResult> {
+suspend fun send(userID: String, content: String): Result<MessageItem> {
     return send(userID, Message(content, null, null))
 }
 
-suspend fun send(userID: String, content: String, title: String): Result<SendResult> {
+suspend fun send(userID: String, content: String, title: String): Result<MessageItem> {
     return send(userID, Message(content, title, null))
 }
 
-suspend fun send(userID: String, content: String, title: String, long: String): Result<SendResult> {
+suspend fun send(userID: String, content: String, title: String, long: String): Result<MessageItem> {
     return send(userID, Message(content, title, long))
 }

@@ -33,7 +33,7 @@ class Client private constructor(
         if (!resp.ok()) {
             throw Error("Send failed\n${resp.bodyAsText()}")
         }
-        Json.decodeFromString(SendResult.serializer(), resp.bodyAsText())
+        Json.decodeFromString(MessageItem.serializer(), resp.bodyAsText())
     }
 
     suspend fun send(content: String) = wrap {
@@ -75,12 +75,12 @@ class Client private constructor(
         }
     }
 
-    suspend fun <T> fetchMessage(postProcessor: List<Message>.() -> List<T>) = wrap {
+    suspend fun <T> fetchMessage(postProcessor: List<MessageItem>.() -> List<T>) = wrap {
         val resp = client.get("$endpoint/$userID/record")
         if (!resp.ok()) {
             throw Error("Fetch failed\n${resp.bodyAsText()}")
         }
-        val messages = Json.decodeFromString(ListSerializer(Message.serializer()), resp.bodyAsText())
+        val messages = Json.decodeFromString(ListSerializer(MessageItem.serializer()), resp.bodyAsText())
         postProcessor(messages)
     }
 
