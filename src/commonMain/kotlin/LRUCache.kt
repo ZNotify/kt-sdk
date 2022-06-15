@@ -4,12 +4,11 @@ class LRUCache<K, V>(size: Int) {
     private var first: CacheNode? = null
     private var last: CacheNode? = null
 
-
     init {
         caches = HashMap(size)
     }
 
-    fun put(k: K, v: V) {
+    private fun put(k: K, v: V) {
         var node = caches[k]
         if (node == null) {
             if (caches.size >= cacheCapacity) {

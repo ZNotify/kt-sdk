@@ -15,15 +15,20 @@ class Client private constructor(
     private val client = HttpClient()
 
     private suspend fun check() {
-        val resp = client.get("$endpoint/$userID/check")
+        val resp = client.get("$endpoint/check") {
+            parameter("user_id", userID)
+        }
         if (resp.bodyAsText() != "true") {
             throw Error("User ID not valid")
         }
     }
 
     suspend fun send(msg: Message) = wrap {
+        if (msg.content.isBlank()) {
+            throw emptyContentError
+        }
         val resp = client.submitForm(
-            url = "https://httpbin.org/post",
+            url = "$endpoint/$userID/send",
             formParameters = Parameters.build {
                 append("content", msg.content)
                 msg.title?.let { append("title", it) }
@@ -53,9 +58,6 @@ class Client private constructor(
 
     suspend fun send(block: Message.() -> Unit) = wrap {
         val msg = Message("", null, null).apply(block)
-        if (msg.content.isEmpty()) {
-            throw Error("Content is empty")
-        }
         send(msg)
     }
 
