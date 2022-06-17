@@ -120,41 +120,44 @@ val isMingwX64 = hostOs.startsWith("Windows")
 val isMacosX64 = hostOs == "Mac OS X"
 val isLinuxX64 = hostOs == "Linux"
 
-fun disableLinuxNative() = tasks.withType<Test>().configureEach {
-    if (this.name.contains("linux", true)) {
-        enabled = false
+fun disableMingwNative(task: Task) {
+    if (task.name.contains("mingw", true)) {
+        task.enabled = false
+        task.onlyIf { false }
     }
 }
 
-fun disableMacosNative() = tasks.withType<Test>().configureEach {
-    if (this.name.contains("macos", true)) {
-        enabled = false
+fun disableMacosNative(task: Task) {
+    if (task.name.contains("macos", true)) {
+        task.enabled = false
+        task.onlyIf { false }
     }
 }
 
-fun disableMingwNative() = tasks.withType<Test>().configureEach {
-    if (this.name.contains("mingw", true)) {
-        enabled = false
+fun disableLinuxNative(task: Task) {
+    if (task.name.contains("linux", true)) {
+        task.enabled = false
+        task.onlyIf { false }
     }
 }
-
 
 project.gradle.taskGraph.whenReady {
     project.tasks.forEach {
         if (it.name.contains("lint")) {
             it.enabled = false
         }
+        if (isMingwX64) {
+            disableLinuxNative(it)
+            disableMacosNative(it)
+        } else if (isMacosX64) {
+            disableLinuxNative(it)
+            disableMingwNative(it)
+        } else if (isLinuxX64) {
+            disableMacosNative(it)
+            disableMingwNative(it)
+        }
     }
-    if (isMingwX64) {
-        disableLinuxNative()
-        disableMacosNative()
-    } else if (isMacosX64) {
-        disableLinuxNative()
-        disableMingwNative()
-    } else if (isLinuxX64) {
-        disableMacosNative()
-        disableMingwNative()
-    }
+
 }
 
 
