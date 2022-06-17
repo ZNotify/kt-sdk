@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        distrubution: [ 'microsoft', 'corretto']
+        distrubution: [ 'temurin', 'zulu']
         java_version: [ '11', '17', '18' ]
 
     steps:
