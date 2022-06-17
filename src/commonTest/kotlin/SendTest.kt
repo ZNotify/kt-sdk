@@ -9,10 +9,9 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SendTest {
-
     @BeforeTest
     fun testServer() = runTest {
-        check()
+        TestUtils.check()
     }
 
     @Test

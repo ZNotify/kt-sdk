@@ -11,7 +11,7 @@ import kotlin.test.assertTrue
 class ClientTest {
     @BeforeTest
     fun testServer() = runTest {
-        check()
+        TestUtils.check()
     }
 
     @Test
