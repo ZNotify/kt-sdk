@@ -115,13 +115,49 @@ kotlin {
     }
 }
 
+val hostOs = System.getProperty("os.name")
+val isMingwX64 = hostOs.startsWith("Windows")
+val isMacosX64 = hostOs == "Mac OS X"
+val isLinuxX64 = hostOs == "Linux"
+
+fun disableLinuxNative() = tasks.withType<Test>().configureEach {
+    if (this.name.contains("linux")) {
+        enabled = false
+    }
+}
+
+fun disableMacosNative() = tasks.withType<Test>().configureEach {
+    if (this.name.contains("macos")) {
+        enabled = false
+    }
+}
+
+fun disableMingwNative() = tasks.withType<Test>().configureEach {
+    if (this.name.contains("mingw")) {
+        enabled = false
+    }
+}
+
+
 project.gradle.taskGraph.whenReady {
     project.tasks.forEach {
         if (it.name.contains("lint")) {
             it.enabled = false
         }
     }
+    if (isMingwX64) {
+        disableLinuxNative()
+        disableMacosNative()
+    } else if (isMacosX64) {
+        disableLinuxNative()
+        disableMingwNative()
+    } else if (isLinuxX64) {
+        disableMacosNative()
+        disableMingwNative()
+    }
 }
+
+
 
 android {
     compileSdk = 30
