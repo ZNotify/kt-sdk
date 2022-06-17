@@ -36,16 +36,6 @@ jobs:
           java-version: ${{ matrix.java_version }}
           cache: 'gradle'
 
-      - name: Install cURL
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: |
-          wget https://curl.se/download/curl-7.83.1.zip
-          7z x curl-7.83.1.zip
-          cd curl-7.83.1
-          ./configure --with-openssl
-          make
-          sudo make install
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
