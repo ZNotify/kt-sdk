@@ -52,20 +52,33 @@ kotlin {
                 useJUnitPlatform()
             }
         }
-        js {
+        js(BOTH) {
             nodejs()
-            browser()
+            browser {
+                commonWebpackConfig {
+                    cssSupport.enabled = true
+                }
+            }
         }
 
         android("android") {
             publishLibraryVariants("release", "debug")
         }
+        linuxX64 {
+            binaries {
+                executable {
+                    entryPoint = "main"
+                }
+            }
+        }
+        mingwX64()
+        macosX64()
     }
 
     sourceSets {
         val ktorVersion = "2.0.2"
         val serializationVersion = "1.3.3"
-        val coroutinesVersion = "1.6.2"
+        val coroutinesVersion = "1.6.1"
 
         val commonMain by getting {
             dependencies {
