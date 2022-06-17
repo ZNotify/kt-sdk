@@ -45,7 +45,7 @@ jobs:
           arguments: build
 
       - uses: msys2/setup-msys2@v2
-        if: ${{ runner.os }} == 'windows-latest'
+        if: ${{ runner.os == 'windows-latest' }}
         with:
           msystem: MINGW64
           update: true
