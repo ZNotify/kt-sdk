@@ -44,6 +44,13 @@ jobs:
         with:
           arguments: build
 
+      - uses: msys2/setup-msys2@v2
+        if: ${{ runner.os }} == 'windows-latest'
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-curl
+
       - name: Run unit tests
         uses: gradle/gradle-build-action@main
         with:
