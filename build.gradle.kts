@@ -121,19 +121,19 @@ val isMacosX64 = hostOs == "Mac OS X"
 val isLinuxX64 = hostOs == "Linux"
 
 fun disableLinuxNative() = tasks.withType<Test>().configureEach {
-    if (this.name.contains("linux")) {
+    if (this.name.contains("linux", true)) {
         enabled = false
     }
 }
 
 fun disableMacosNative() = tasks.withType<Test>().configureEach {
-    if (this.name.contains("macos")) {
+    if (this.name.contains("macos", true)) {
         enabled = false
     }
 }
 
 fun disableMingwNative() = tasks.withType<Test>().configureEach {
-    if (this.name.contains("mingw")) {
+    if (this.name.contains("mingw", true)) {
         enabled = false
     }
 }
