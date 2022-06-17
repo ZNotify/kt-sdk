@@ -1,6 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-import java.io.File
 import java.io.FileInputStream
 import java.util.*
 
@@ -64,15 +63,8 @@ kotlin {
         android("android") {
             publishLibraryVariants("release", "debug")
         }
-        linuxX64 {
-            binaries {
-                executable {
-                    entryPoint = "main"
-                }
-            }
-        }
+        linuxX64 ()
         mingwX64()
-        macosX64()
     }
 
     sourceSets {
