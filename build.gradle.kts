@@ -29,6 +29,7 @@ plugins {
     kotlin("multiplatform") version "1.7.0"
     kotlin("plugin.serialization") version "1.7.0"
     id("io.codearte.nexus-staging") version "0.30.0"
+    id("com.dorongold.task-tree") version "2.1.0"
     id("com.android.library")
     id("maven-publish")
     id("signing")
@@ -50,6 +51,10 @@ kotlin {
             testRuns["test"].executionTask.configure {
                 useJUnitPlatform()
             }
+        }
+        js {
+            nodejs()
+            browser()
         }
 
         android("android") {
