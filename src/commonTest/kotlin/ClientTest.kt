@@ -2,10 +2,7 @@ import entity.Message
 import entity.MessageItem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 @ExperimentalCoroutinesApi
 class ClientTest {
@@ -30,7 +27,9 @@ class ClientTest {
 
     @Test
     fun checkSendMessage() = runTest {
-        val client = Client.create("test").getOrNull()!!
+        val client = Client.create("test").getOrElse {
+            fail(it.stackTraceToString())
+        }
         val ret = client.send(Message("test"))
         assertTrue { ret.isSuccess }
         assertTrue { ret.getOrNull() is MessageItem }
@@ -39,7 +38,9 @@ class ClientTest {
 
     @Test
     fun checkSendMessage2() = runTest {
-        val client = Client.create("test").getOrNull()!!
+        val client = Client.create("test").getOrElse {
+            fail(it.stackTraceToString())
+        }
         val ret = client.send(Message("test", "test_title"))
         assertTrue { ret.isSuccess }
         assertTrue { ret.getOrNull() is MessageItem }
@@ -49,7 +50,9 @@ class ClientTest {
 
     @Test
     fun checkSendMessageFailed() = runTest {
-        val client = Client.create("test").getOrNull()!!
+        val client = Client.create("test").getOrElse {
+            fail(it.stackTraceToString())
+        }
         val ret = client.send(Message(""))
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
