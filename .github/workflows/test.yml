@@ -57,7 +57,7 @@ jobs:
 
       - name: Run unit tests on Windows
         shell: msys2 {0}
-        if: ${{ runner.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'windows-latest' }}
         run: |
           export PATH=%PATH%:/c/msys64/mingw64/bin/
           ./gradlew check
