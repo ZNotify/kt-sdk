@@ -27,7 +27,7 @@ jobs:
         with:
           repository: 'ZNotify/kt-sdk'
 
-      - uses: ZNotify/test-action@master
+      - uses: ZNotify/test-server-action@master
 
       - uses: actions/setup-java@v3
         with:
