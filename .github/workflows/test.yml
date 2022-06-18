@@ -39,7 +39,7 @@ jobs:
         run: chmod +x gradlew
 
       - uses: actions/github-script@v6
-        id: set-result
+        id: kotlin_version
         with:
           script: |
             const fs = require('fs');
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.konan/
-          key: ${{ runner.os }}-konan-${{ steps.kotlin_version.outputs.value }}
+          key: ${{ runner.os }}-konan-${{ steps.kotlin_version.outputs.result }}
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@main
