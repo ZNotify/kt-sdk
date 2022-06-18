@@ -65,7 +65,6 @@ kotlin {
         }
         linuxX64()
         macosX64()
-        mingwX64()
     }
 
     sourceSets {
@@ -91,11 +90,6 @@ kotlin {
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
             }
         }
-        val mingwX64Main by getting {
-            dependencies {
-                implementation("io.ktor:ktor-client-curl:$ktorVersion")
-            }
-        }
         val macosX64Main by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-darwin:$ktorVersion")
@@ -116,16 +110,8 @@ kotlin {
 }
 
 val hostOs = System.getProperty("os.name")
-val isMingwX64 = hostOs.startsWith("Windows")
 val isMacosX64 = hostOs == "Mac OS X"
 val isLinuxX64 = hostOs == "Linux"
-
-fun tryDisableMingwNative(task: Task) {
-    if (task.name.contains("mingw", true)) {
-        task.enabled = false
-        task.onlyIf { false }
-    }
-}
 
 fun tryDisableMacosNative(task: Task) {
     if (task.name.contains("macos", true)) {
@@ -147,15 +133,10 @@ project.gradle.taskGraph.whenReady {
             it.enabled = false
         }
         if (System.getenv("TEST") != null) {
-            if (isMingwX64) {
+            if (isMacosX64) {
                 tryDisableLinuxNative(it)
-                tryDisableMacosNative(it)
-            } else if (isMacosX64) {
-                tryDisableLinuxNative(it)
-                tryDisableMingwNative(it)
             } else if (isLinuxX64) {
                 tryDisableMacosNative(it)
-                tryDisableMingwNative(it)
             }
         }
     }
