@@ -43,7 +43,7 @@ jobs:
         run: chmod +x gradlew
 
       - uses: msys2/setup-msys2@v2
-        if: ${{ runner.os == 'windows-latest' }}
+        if: ${{ runner.os == 'Windows' }}
         with:
           msystem: MINGW64
           update: true
@@ -57,13 +57,13 @@ jobs:
 
       - name: Run unit tests on Windows
         shell: msys2 {0}
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: ${{ runner.os == 'Windows' }}
         run: |
           export PATH=%PATH%:/c/msys64/mingw64/bin/
           ./gradlew check
 
       - name: Run unit tests
-        if: ${{ matrix.os != 'windows-latest' }}
+        if: ${{ runner.os != 'Windows' }}
         uses: gradle/gradle-build-action@main
         with:
           arguments: check
