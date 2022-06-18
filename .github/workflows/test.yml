@@ -7,6 +7,9 @@ on:
     branches: [ master ]
   workflow_call:
 
+env:
+  TEST: true
+
 jobs:
   test:
     strategy:
@@ -50,8 +53,15 @@ jobs:
           msystem: MINGW64
           update: true
           install: mingw-w64-x86_64-curl
+          path-type: inherit
+
+      - name: Run unit tests on Windows
+        shell: msys2 {0}
+        if: ${{ runner.os == 'windows-latest' }}
+        run: ./gradlew check
 
       - name: Run unit tests
+        if: ${{ matrix.os != 'windows-latest' }}
         uses: gradle/gradle-build-action@main
         with:
           arguments: check
