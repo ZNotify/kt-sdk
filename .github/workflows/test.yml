@@ -14,9 +14,13 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ macos-latest, ubuntu-latest ]
+        os: [ ubuntu-latest ]
         distribution: [ 'temurin', 'zulu' ]
         java_version: [ '11', '17', '18' ]
+        include:
+          - os: macos-latest
+            distribution: zulu
+            java_version: 17
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
