@@ -38,6 +38,18 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Read value from Properties-file
+        id: kotlin_version
+        uses: christian-draeger/read-properties@1.0.1
+        with:
+          path: './gradle.properties'
+          property: 'kotlin.version'
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.konan/
+          key: ${{ runner.os }}-konan-${{ steps.kotlin_version.outputs.value }}
+
       - name: Build with Gradle
         uses: gradle/gradle-build-action@main
         with:
