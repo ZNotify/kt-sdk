@@ -11,11 +11,11 @@ val isUnit by lazy {
     try {
         throw Error("test")
     } catch (e: Throwable) {
-        return@lazy !(e.stackTraceToString()
+        return@lazy e.stackTraceToString()
             .split("\n")
             .any {
                 it.contains("Test")
-            })
+            }
     }
 }
 
