@@ -7,20 +7,20 @@ val ok: HttpResponse.() -> Boolean = {
 
 val emptyContentError = Error("Content is empty")
 
-val isTest by lazy {
+val isUnit by lazy {
     try {
         throw Error("test")
     } catch (e: Throwable) {
-        return@lazy e.stackTraceToString()
+        return@lazy !(e.stackTraceToString()
             .split("\n")
             .any {
                 it.contains("Test")
-            }
+            })
     }
 }
 
 fun getEndpoint(): String {
-    return if (isTest) {
+    return if (isUnit) {
         "http://localhost:14444"
     } else {
         "https://push.learningman.top"
