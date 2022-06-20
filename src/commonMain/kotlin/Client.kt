@@ -10,7 +10,7 @@ import kotlinx.serialization.json.Json
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class Client private constructor(
     private val userID: String,
-    private val endpoint: String = getEndpoint()
+    private val endpoint: String
 ) {
     private val client = HttpClient()
 
@@ -87,7 +87,7 @@ class Client private constructor(
     }
 
     companion object {
-        suspend fun create(userID: String, endpoint: String = getEndpoint()) =
+        suspend fun create(userID: String, endpoint: String = defaultEndpoint) =
             wrap {
                 val client = Client(userID, endpoint)
                 client.check()

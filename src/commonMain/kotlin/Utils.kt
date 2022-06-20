@@ -19,10 +19,11 @@ val isUnit by lazy {
     }
 }
 
-fun getEndpoint(): String {
-    return if (isUnit) {
-        "http://localhost:14444"
-    } else {
-        "https://push.learningman.top"
+val defaultEndpoint: String
+    get() {
+        return if (isUnit) {
+            "http://localhost:14444"
+        } else {
+            "https://push.learningman.top"
+        }
     }
-}
