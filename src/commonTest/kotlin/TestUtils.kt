@@ -7,7 +7,7 @@ import kotlin.test.fail
 object TestUtils {
     suspend fun check() {
         try {
-            with(HttpClient().get("${getEndpoint()}/alive")) {
+            with(HttpClient().get("${defaultEndpoint}/alive")) {
                 if (status != HttpStatusCode.NoContent) {
                     fail("Test server is not running")
                 }
