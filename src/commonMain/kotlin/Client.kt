@@ -69,7 +69,7 @@ class Client private constructor(
     }
 
     suspend fun reportFCMToken(token: String) = wrap {
-        val resp = client.put("$endpoint/$userID/fcm/$token") {
+        val resp = client.put("$endpoint/$userID/fcm/token") {
             setBody(token)
         }
         if (!resp.ok()) {
