@@ -57,4 +57,16 @@ class ClientTest {
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
     }
+
+    @Test
+    fun checkReportFCMToken() = runTest {
+        val client = Client.create("test").getOrElse {
+            fail(it.stackTraceToString())
+        }
+        val ret = client.reportFCMToken("test")
+        assertTrue { ret.isSuccess }
+
+        val ret2 = client.reportFCMToken("test") // Can handle 304 correct
+        assertTrue { ret2.isSuccess }
+    }
 }
