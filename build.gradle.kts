@@ -70,7 +70,7 @@ kotlin {
     sourceSets {
         val ktorVersion = "2.0.2"
         val serializationVersion = "1.3.3"
-        val coroutinesVersion = "1.6.1"
+        val coroutinesVersion = "1.6.3"
 
         val commonMain by getting {
             dependencies {
@@ -109,7 +109,7 @@ kotlin {
     }
 }
 
-val hostOs = System.getProperty("os.name")
+val hostOs: String = System.getProperty("os.name")
 val isMacosX64 = hostOs == "Mac OS X"
 val isLinuxX64 = hostOs == "Linux"
 
