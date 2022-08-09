@@ -7,7 +7,7 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             if (requested.id.namespace == "com.android" || requested.id.name == "kotlin-android") {
-                useModule("com.android.tools.build:gradle:7.0.2")
+                useModule("com.android.tools.build:gradle:7.2.2")
             }
         }
     }
