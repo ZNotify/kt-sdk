@@ -31,7 +31,7 @@ class Client private constructor(
             throw emptyContentError
         }
         val resp = client.submitForm(
-            url = "$endpoint/$userID/dev.zxilly.notify.sdk.send",
+            url = "$endpoint/$userID/send",
             formParameters = Parameters.build {
                 append("content", msg.content)
                 msg.title?.let { append("title", it) }
