@@ -1,3 +1,5 @@
+package dev.zxilly.notify.sdk
+
 class LRUCache<K, V>(size: Int) {
     private var cacheCapacity: Int = size
     private var caches: HashMap<K, CacheNode>

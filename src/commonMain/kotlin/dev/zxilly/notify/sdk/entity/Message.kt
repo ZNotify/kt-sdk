@@ -1,4 +1,4 @@
-package entity
+package dev.zxilly.notify.sdk.entity
 
 import kotlinx.serialization.Serializable
 

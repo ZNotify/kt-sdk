@@ -1,3 +1,5 @@
+package dev.zxilly.notify.sdk
+
 import io.ktor.client.statement.*
 
 val ok: HttpResponse.() -> Boolean = {

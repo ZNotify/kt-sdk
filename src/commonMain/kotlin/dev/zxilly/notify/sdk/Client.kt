@@ -1,4 +1,7 @@
-import entity.*
+package dev.zxilly.notify.sdk
+
+import dev.zxilly.notify.sdk.entity.Message
+import dev.zxilly.notify.sdk.entity.MessageItem
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -28,7 +31,7 @@ class Client private constructor(
             throw emptyContentError
         }
         val resp = client.submitForm(
-            url = "$endpoint/$userID/send",
+            url = "$endpoint/$userID/dev.zxilly.notify.sdk.send",
             formParameters = Parameters.build {
                 append("content", msg.content)
                 msg.title?.let { append("title", it) }

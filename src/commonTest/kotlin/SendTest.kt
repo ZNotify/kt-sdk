@@ -1,5 +1,6 @@
-import entity.Message
-import entity.MessageItem
+import dev.zxilly.notify.sdk.send
+import dev.zxilly.notify.sdk.entity.Message
+import dev.zxilly.notify.sdk.entity.MessageItem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
