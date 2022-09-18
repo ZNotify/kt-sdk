@@ -106,6 +106,12 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
             }
         }
+
+        val androidAndroidTestRelease by getting
+
+        val androidTest by getting {
+            dependsOn(androidAndroidTestRelease)
+        }
     }
 }
 
