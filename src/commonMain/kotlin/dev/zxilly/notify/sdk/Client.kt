@@ -97,6 +97,15 @@ class Client private constructor(
                 client
             }
 
+        suspend fun check(userID: String, endpoint: String = defaultEndpoint): Boolean {
+            val ret = runCatching {
+                val client = Client(userID, endpoint)
+                client.check()
+            }
+            return ret.isSuccess
+        }
+
+
         private suspend fun <T> wrap(block: suspend () -> T): Result<T> {
             return runCatching {
                 block.invoke()
