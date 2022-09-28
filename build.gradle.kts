@@ -4,6 +4,14 @@ import java.io.FileInputStream
 import java.util.*
 
 group = "dev.zxilly"
+
+val props: Properties = Properties().apply {
+    val file = File(rootProject.rootDir, "local.properties")
+    if (file.exists()) {
+        load(FileInputStream(file))
+    }
+}
+
 if (isCI()) {
     when (System.getenv("GITHUB_EVENT_NAME")) {
         "release" -> {
@@ -163,33 +171,21 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    lint {
-        isIgnoreTestSources = true
-        isCheckTestSources = false
-        isCheckReleaseBuilds = false
-        isAbortOnError = false
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+        singleVariant("debug") {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
-
-    buildToolsVersion = "30.0.3"
 }
 
 fun String.mapToEnv(): String {
     return this.toUpperCase().replace(".", "_")
 }
-
-lateinit var propsCache: Properties
-val props: Properties
-    get() {
-        if (!::propsCache.isInitialized) {
-            propsCache = Properties().apply {
-                val file = File(rootProject.rootDir, "local.properties")
-                if (file.exists()) {
-                    load(FileInputStream(file))
-                }
-            }
-        }
-        return propsCache
-    }
 
 fun isCI() = System.getenv("CI") != null
 
@@ -269,7 +265,6 @@ publishing {
             scm {
                 url.set("https://github.com/ZNotify/kt-sdk.git")
             }
-
         }
     }
 }
