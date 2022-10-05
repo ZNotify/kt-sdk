@@ -33,8 +33,8 @@ repositories {
 }
 
 plugins {
-    kotlin("multiplatform") version "1.7.10"
-    kotlin("plugin.serialization") version "1.7.10"
+    kotlin("multiplatform") version "1.7.20"
+    kotlin("plugin.serialization") version "1.7.20"
     id("io.codearte.nexus-staging") version "0.30.0"
     id("com.dorongold.task-tree") version "2.1.0"
     id("com.android.library")
