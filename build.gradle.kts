@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage", "UNUSED_VARIABLE")
 
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import java.io.FileInputStream
 import java.util.*
 
@@ -32,6 +33,21 @@ repositories {
     mavenCentral()
 }
 
+afterEvaluate {
+    // Remove log pollution until Android support in KMP improves.
+    project.extensions.findByType<KotlinMultiplatformExtension>()?.let { kmpExt ->
+        val sourceSetsToRemove = setOf(
+            "androidTestFixtures",
+            "androidTestFixturesDebug",
+            "androidTestFixturesRelease",
+            "androidAndroidTestRelease"
+        )
+        kmpExt.sourceSets.removeAll {
+            sourceSetsToRemove.contains(it.name)
+        }
+    }
+}
+
 plugins {
     kotlin("multiplatform") version "1.7.20"
     kotlin("plugin.serialization") version "1.7.20"
@@ -59,13 +75,9 @@ kotlin {
                 useJUnitPlatform()
             }
         }
-        js(BOTH) {
+        js {
             nodejs()
-            browser {
-                commonWebpackConfig {
-                    cssSupport.enabled = true
-                }
-            }
+            browser()
         }
 
         android("android") {
@@ -103,6 +115,11 @@ kotlin {
                 implementation("io.ktor:ktor-client-darwin:$ktorVersion")
             }
         }
+        val jsMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-js:$ktorVersion")
+            }
+        }
         val linuxX64Main by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
@@ -113,12 +130,6 @@ kotlin {
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
             }
-        }
-
-        val androidAndroidTestRelease by getting
-
-        val androidTest by getting {
-            dependsOn(androidAndroidTestRelease)
         }
     }
 }
@@ -154,17 +165,14 @@ project.gradle.taskGraph.whenReady {
             }
         }
     }
-
 }
 
-
-
 android {
-    compileSdk = 30
+    compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 24
-        targetSdk = 32
+        targetSdk = 33
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
