@@ -1,13 +1,14 @@
 package dev.zxilly.notify.sdk
 
-import dev.zxilly.notify.sdk.entity.Message
-import dev.zxilly.notify.sdk.entity.MessageItem
+import dev.zxilly.notify.sdk.entity.*
 import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.serialization.builtins.ListSerializer
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
@@ -15,18 +16,25 @@ class Client private constructor(
     private val userID: String,
     private val endpoint: String
 ) {
-    private val client = HttpClient()
-
-    private suspend fun check() {
-        val resp = client.get("$endpoint/check") {
-            parameter("user_id", userID)
-        }
-        if (resp.bodyAsText() != "true") {
-            throw Error("User ID not valid")
+    private val client = HttpClient() {
+        install(ContentNegotiation) {
+            json(Json {
+                ignoreUnknownKeys = true
+            })
         }
     }
 
-    suspend fun send(msg: Message) = wrap {
+    private suspend inline fun check() {
+        val resp = client.get("$endpoint/check") {
+            parameter("user_id", userID)
+        }
+        val ret: Response<Boolean> = resp.body()
+        if (!ret.body) {
+            throw Exception("User ID $userID not valid")
+        }
+    }
+
+    suspend fun send(msg: MessagePayload) = wrap {
         if (msg.content.isBlank()) {
             throw emptyContentError
         }
@@ -39,28 +47,29 @@ class Client private constructor(
             }
         )
         if (!resp.ok()) {
-            throw Error("Send failed\n${resp.bodyAsText()}")
+            val err: ErrorResponse = resp.body()
+            throw Exception("Error code ${err.code}: ${err.body}")
         }
-        Json.decodeFromString(MessageItem.serializer(), resp.bodyAsText())
+        (resp.body() as Response<MessageItem>).body
     }
 
     suspend fun send(content: String) = wrap {
-        val msg = Message(content, null, null)
+        val msg = MessagePayload(content, null, null)
         send(msg)
     }
 
     suspend fun send(content: String, title: String) = wrap {
-        val msg = Message(content, title, null)
+        val msg = MessagePayload(content, title, null)
         send(msg)
     }
 
     suspend fun send(content: String, title: String, long: String) = wrap {
-        val msg = Message(content, title, long)
+        val msg = MessagePayload(content, title, long)
         send(msg)
     }
 
-    suspend fun send(block: Message.() -> Unit) = wrap {
-        val msg = Message("", null, null).apply(block)
+    suspend fun send(block: MessagePayload.() -> Unit) = wrap {
+        val msg = MessagePayload("", null, null).apply(block)
         send(msg)
     }
 
@@ -71,13 +80,30 @@ class Client private constructor(
         }
     }
 
-    suspend fun reportFCMToken(token: String) = wrap {
-        val resp = client.put("$endpoint/$userID/fcm/token") {
-            setBody(token)
+    suspend fun register(channel: Channel, token: String, deviceID: String) = wrap {
+        if (!isUUID(deviceID)) {
+            throw Error("Device ID is not a valid UUID")
+        }
+
+        println(Parameters.build {
+            append("channel", channel.value)
+            append("token", token)
+        }.formUrlEncode())
+        val resp = client.put {
+            url("$endpoint/$userID/token/$deviceID")
+            setBody(
+                Parameters.build {
+                    append("channel", channel.value)
+                    append("token", token)
+                }.formUrlEncode()
+            )
+            header("Content-Type", "application/x-www-form-urlencoded")
         }
         if (!resp.ok()) {
-            throw Error("Report failed\n${resp.bodyAsText()}")
+            val err: ErrorResponse = resp.body()
+            throw Exception("Error code ${err.code}: ${err.body}")
         }
+        (resp.body() as Response<Boolean>).body
     }
 
     suspend fun <T> fetchMessage(postProcessor: List<MessageItem>.() -> List<T>) = wrap {
@@ -85,8 +111,8 @@ class Client private constructor(
         if (!resp.ok()) {
             throw Error("Fetch failed\n${resp.bodyAsText()}")
         }
-        val messages = Json.decodeFromString(ListSerializer(MessageItem.serializer()), resp.bodyAsText())
-        postProcessor(messages)
+        val messages = resp.body() as Response<List<MessageItem>>
+        postProcessor(messages.body)
     }
 
     companion object {

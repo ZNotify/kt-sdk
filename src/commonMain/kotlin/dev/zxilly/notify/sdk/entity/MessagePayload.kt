@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class Message(
+data class MessagePayload(
     val content: String,
     val title: String?,
     val long: String?

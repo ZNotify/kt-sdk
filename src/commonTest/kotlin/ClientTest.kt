@@ -1,5 +1,6 @@
 import dev.zxilly.notify.sdk.Client
-import dev.zxilly.notify.sdk.entity.Message
+import dev.zxilly.notify.sdk.entity.Channel
+import dev.zxilly.notify.sdk.entity.MessagePayload
 import dev.zxilly.notify.sdk.entity.MessageItem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -31,7 +32,7 @@ class ClientTest {
         val client = Client.create("test").getOrElse {
             fail(it.stackTraceToString())
         }
-        val ret = client.send(Message("test"))
+        val ret = client.send(MessagePayload("test"))
         assertTrue { ret.isSuccess }
         assertTrue { ret.getOrNull() is MessageItem }
         assertEquals(ret.getOrNull()!!.content, "test")
@@ -42,7 +43,7 @@ class ClientTest {
         val client = Client.create("test").getOrElse {
             fail(it.stackTraceToString())
         }
-        val ret = client.send(Message("test", "test_title"))
+        val ret = client.send(MessagePayload("test", "test_title"))
         assertTrue { ret.isSuccess }
         assertTrue { ret.getOrNull() is MessageItem }
         assertEquals(ret.getOrNull()!!.content, "test")
@@ -54,20 +55,28 @@ class ClientTest {
         val client = Client.create("test").getOrElse {
             fail(it.stackTraceToString())
         }
-        val ret = client.send(Message(""))
+        val ret = client.send(MessagePayload(""))
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
+
     }
 
     @Test
-    fun checkReportFCMToken() = runTest {
+    fun checkRegister() = runTest {
         val client = Client.create("test").getOrElse {
             fail(it.stackTraceToString())
         }
-        val ret = client.reportFCMToken("test")
-        assertTrue { ret.isSuccess }
+        val ret = client.register(Channel.FCM, "test", "test")
+        assertTrue { ret.isFailure }
+        assertTrue { ret.exceptionOrNull() is Throwable }
+        expect("Device ID is not a valid UUID") {
+            ret.exceptionOrNull()!!.message
+        }
 
-        val ret2 = client.reportFCMToken("test") // Can handle 304 correct
+        val uuid = "00000000-0000-0000-0000-000000000000"
+        val ret2 = client.register(Channel.WebSocket, "test", uuid)
         assertTrue { ret2.isSuccess }
+        assertTrue { ret2.getOrNull() is Boolean }
+        assertTrue { ret2.getOrNull()!! }
     }
 }
