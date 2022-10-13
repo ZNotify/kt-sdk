@@ -173,6 +173,7 @@ project.gradle.taskGraph.whenReady {
 android {
     compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    namespace = "dev.zxilly.notify.sdk"
     defaultConfig {
         minSdk = 24
         targetSdk = 33
@@ -238,6 +239,8 @@ nexusStaging {
     serverUrl = "https://s01.oss.sonatype.org/service/local/"
     username = mavenUser
     password = mavenPassword
+    packageGroup = "dev.zxilly"
+    stagingProfileId = "95214448af0738"
 }
 
 publishing {
