@@ -23,6 +23,14 @@ if (isCI()) {
             version = tag
             logger.info("Release: $tag")
         }
+        "push" -> {
+            val commit = System.getenv("GITHUB_SHA")
+            if (commit.isNullOrBlank()) {
+                throw IllegalArgumentException("GITHUB_SHA is not set")
+            }
+            val shortSHA = commit.substring(0, 7)
+            version = "master-$shortSHA-SNAPSHOT"
+        }
     }
 } else {
     version = getKey("library.version", strict = true)
