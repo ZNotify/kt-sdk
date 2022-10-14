@@ -85,10 +85,6 @@ class Client private constructor(
             throw Error("Device ID is not a valid UUID")
         }
 
-        println(Parameters.build {
-            append("channel", channel.value)
-            append("token", token)
-        }.formUrlEncode())
         val resp = client.put {
             url("$endpoint/$userID/token/$deviceID")
             setBody(
