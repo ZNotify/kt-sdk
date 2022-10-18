@@ -74,7 +74,7 @@ class ClientTest {
         }
 
         val uuid = "00000000-0000-0000-0000-000000000000"
-        val ret2 = client.register(Channel.WebSocket, "test", uuid)
+        val ret2 = client.register(Channel.WebSocket, "", uuid)
         assertTrue { ret2.isSuccess }
         assertTrue { ret2.getOrNull() is Boolean }
         assertTrue { ret2.getOrNull()!! }
