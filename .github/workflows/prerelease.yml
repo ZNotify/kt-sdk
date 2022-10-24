@@ -2,6 +2,7 @@ name: Maven PreRelease
 
 on:
   push:
+    branches: [ master ]
 
 env:
   MAVEN_USER: ${{ secrets.MAVEN_USER }}
