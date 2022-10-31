@@ -102,6 +102,19 @@ class Client private constructor(
         (resp.body() as Response<Boolean>).body
     }
 
+    suspend fun unregister(deviceID: String) = wrap {
+        if (!isUUID(deviceID)) {
+            throw Error("Device ID is not a valid UUID")
+        }
+
+        val resp = client.delete("$endpoint/$userID/token/$deviceID")
+        if (!resp.ok()) {
+            val err: ErrorResponse = resp.body()
+            throw Exception("Error code ${err.code}: ${err.body}")
+        }
+        (resp.body() as Response<Boolean>).body
+    }
+
     suspend fun <T> fetchMessage(postProcessor: List<MessageItem>.() -> List<T>) = wrap {
         val resp = client.get("$endpoint/$userID/record")
         if (!resp.ok()) {
