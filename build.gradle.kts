@@ -232,12 +232,17 @@ fun getKey(key: String, base64: Boolean = false, strict: Boolean = false): Strin
     }
 }
 
-val mavenUser = getKey("maven.user")
-val mavenPassword = getKey("maven.password")
+val mavenCentralUser = getKey("maven.user")
+val mavenCentralPassword = getKey("maven.password")
 val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
 val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 
-val releaseUrl = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+val mavenCentralReleaseUrl = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+
+val githubUser = getKey("github.user").takeIf { it.isBlank() } ?: "ZNotify"
+val githubToken = getKey("github.token")
+
+val githubPackageRegistryUrl = uri("https://maven.pkg.github.com/ZNotify/kt-sdk")
 
 val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
@@ -245,8 +250,8 @@ val javadocJar by tasks.registering(Jar::class) {
 
 nexusStaging {
     serverUrl = "https://s01.oss.sonatype.org/service/local/"
-    username = mavenUser
-    password = mavenPassword
+    username = mavenCentralUser
+    password = mavenCentralPassword
     packageGroup = "dev.zxilly"
     stagingProfileId = "95214448af0738"
 }
@@ -255,10 +260,18 @@ publishing {
     repositories {
         maven {
             name = "sonatype"
-            url = releaseUrl
+            url = mavenCentralReleaseUrl
             credentials {
-                username = mavenUser
-                password = mavenPassword
+                username = mavenCentralUser
+                password = mavenCentralPassword
+            }
+        }
+        maven {
+            name = "github"
+            url = githubPackageRegistryUrl
+            credentials {
+                username = githubUser
+                password = githubToken
             }
         }
     }
