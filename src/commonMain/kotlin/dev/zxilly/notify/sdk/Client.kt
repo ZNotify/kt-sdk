@@ -3,6 +3,7 @@ package dev.zxilly.notify.sdk
 import dev.zxilly.notify.sdk.entity.*
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -16,11 +17,15 @@ class Client private constructor(
     private val userID: String,
     private val endpoint: String
 ) {
-    private val client = HttpClient() {
+    private val client = HttpClient {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
             })
+        }
+        // set useragent
+        install(UserAgent) {
+            agent = "znotify-kt-sdk/${BuildKonfig.VERSION}"
         }
     }
 

@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage", "UNUSED_VARIABLE")
 
+import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import java.io.FileInputStream
 import java.util.*
@@ -63,11 +64,16 @@ afterEvaluate {
 plugins {
     kotlin("multiplatform") version "1.7.21"
     kotlin("plugin.serialization") version "1.7.21"
-    id("io.codearte.nexus-staging") version "0.30.0"
-    id("com.dorongold.task-tree") version "2.1.0"
+
     id("com.android.library")
+
+    id("io.codearte.nexus-staging") version "0.30.0"
     id("maven-publish")
     id("signing")
+
+    id("com.dorongold.task-tree") version "2.1.0"
+
+    id("com.codingfeline.buildkonfig") version "0.13.3"
 }
 
 kotlin {
@@ -152,6 +158,14 @@ kotlin {
                 implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
             }
         }
+    }
+}
+
+buildkonfig {
+    packageName = "dev.zxilly.notify.sdk"
+
+    defaultConfigs {
+        buildConfigField(FieldSpec.Type.STRING, "VERSION", version.toString())
     }
 }
 
