@@ -23,6 +23,7 @@ if (isCI()) {
             version = tag
             logger.info("Release: $tag")
         }
+
         "push" -> {
             val commit = System.getenv("GITHUB_SHA")
             if (commit.isNullOrBlank()) {
@@ -39,6 +40,9 @@ if (isCI()) {
 repositories {
     google()
     mavenCentral()
+    maven {
+        url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
+    }
 }
 
 afterEvaluate {
