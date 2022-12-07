@@ -16,14 +16,14 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         distribution: [ 'zulu' ]
-        java_version: [ '18', '19' ]
+        java_version: [ '17', '18' ]
         include:
           - os: macos-latest
             distribution: zulu
-            java_version: 19
+            java_version: 18
           - os: windows-latest
             distribution: zulu
-            java_version: 19
+            java_version: 18
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
