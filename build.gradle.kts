@@ -93,10 +93,11 @@ kotlin {
         }
         linuxX64()
         macosX64()
+        mingwX64()
     }
 
     sourceSets {
-        val ktorVersion = "2.1.3"
+        val ktorVersion = "2.2.0-eap-564"
         val serializationVersion = "1.4.1"
         val coroutinesVersion = "1.6.4"
 
@@ -140,6 +141,11 @@ kotlin {
             dependencies {
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+            }
+        }
+        val mingwX64Main by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
             }
         }
     }
