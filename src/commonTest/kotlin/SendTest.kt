@@ -1,6 +1,6 @@
 import dev.zxilly.notify.sdk.send
-import dev.zxilly.notify.sdk.entity.MessagePayload
-import dev.zxilly.notify.sdk.entity.MessageItem
+import dev.zxilly.notify.sdk.entity.MessageOption
+import dev.zxilly.notify.sdk.entity.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
@@ -24,24 +24,24 @@ class SendTest {
 
     @Test
     fun checkSendMessage() = runTest {
-        val ret = send("test", MessagePayload("test"))
+        val ret = send("test", MessageOption("test"))
         assertTrue { ret.isSuccess }
-        assertTrue { ret.getOrNull() is MessageItem }
+        assertTrue { ret.getOrNull() is Message }
         assertEquals(ret.getOrNull()!!.content, "test")
     }
 
     @Test
     fun checkSendMessage2() = runTest {
-        val ret = send("test", MessagePayload("test", "test_title"))
+        val ret = send("test", MessageOption("test", "test_title"))
         assertTrue { ret.isSuccess }
-        assertTrue { ret.getOrNull() is MessageItem }
+        assertTrue { ret.getOrNull() is Message }
         assertEquals(ret.getOrNull()!!.content, "test")
         assertEquals(ret.getOrNull()!!.title, "test_title")
     }
 
     @Test
     fun checkSendMessageFailed() = runTest {
-        val ret = send("test", MessagePayload(""))
+        val ret = send("test", MessageOption(""))
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
     }

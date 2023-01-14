@@ -37,6 +37,14 @@ val defaultEndpoint: String
         }
     }
 
+fun String.removeSuffixSlash(): String {
+    return if (this.endsWith("/")) {
+        this.substring(0, this.length - 1)
+    } else {
+        this
+    }
+}
+
 fun isUUID(str: String): Boolean {
     return str.matches(Regex("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"))
 }

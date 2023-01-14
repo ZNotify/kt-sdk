@@ -104,7 +104,7 @@ kotlin {
     }
 
     sourceSets {
-        val ktorVersion = "2.2.1"
+        val ktorVersion = "2.2.2"
         val serializationVersion = "1.4.1"
         val coroutinesVersion = "1.6.4"
 
@@ -115,6 +115,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-client-resources:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
             }
         }
