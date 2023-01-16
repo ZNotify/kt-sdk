@@ -108,7 +108,7 @@ kotlin {
         }
         val macosX64Main by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-darwin:$ktorVersion")
+                implementation("io.ktor:ktor-client-cio:$ktorVersion")
             }
         }
         val jsMain by getting {
