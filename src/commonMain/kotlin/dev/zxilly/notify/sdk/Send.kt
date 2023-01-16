@@ -3,15 +3,8 @@ package dev.zxilly.notify.sdk
 import dev.zxilly.notify.sdk.entity.MessageOption
 import dev.zxilly.notify.sdk.entity.Message
 
-private val clients = LRUCache<String, Client>(8)
-
 private suspend fun getClient(userID: String): Result<Client> {
-    val cacheClient = clients[userID]
-    return if (cacheClient != null) {
-        Result.success(cacheClient)
-    } else {
-        Client.create(userID)
-    }
+    return Client.create(userID)
 }
 
 suspend fun send(userID: String, message: MessageOption): Result<Message> {
