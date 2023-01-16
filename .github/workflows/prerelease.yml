@@ -10,6 +10,7 @@ env:
   SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
   SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_USER: ZNotify
 
 jobs:
   build:
