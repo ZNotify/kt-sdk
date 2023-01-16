@@ -1,91 +1,58 @@
 @file:Suppress("UnstableApiUsage", "UNUSED_VARIABLE")
 
 import com.codingfeline.buildkonfig.compiler.FieldSpec
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import java.io.FileInputStream
-import java.util.*
 
 group = "dev.zxilly"
 
-val props: Properties = Properties().apply {
-    val file = File(rootProject.rootDir, "local.properties")
-    if (file.exists()) {
-        load(FileInputStream(file))
-    }
-}
-
-if (isCI()) {
-    when (System.getenv("GITHUB_EVENT_NAME")) {
-        "release" -> {
-            val tag = System.getenv("GITHUB_REF_NAME")
-            if (tag.isNullOrBlank()) {
-                throw IllegalArgumentException("GITHUB_REF_NAME is not set")
-            }
-            version = tag
-            logger.info("Release: $tag")
-        }
-
-        "push" -> {
-            val commit = System.getenv("GITHUB_SHA")
-            if (commit.isNullOrBlank()) {
-                throw IllegalArgumentException("GITHUB_SHA is not set")
-            }
-            val shortSHA = commit.substring(0, 7)
-            version = "master-$shortSHA-SNAPSHOT"
-        }
-    }
-} else {
-    version = getKey("library.version", strict = true)
-}
+//val props: Properties = Properties().apply {
+//    val file = File(rootProject.rootDir, "local.properties")
+//    if (file.exists()) {
+//        load(FileInputStream(file))
+//    }
+//}
 
 repositories {
     google()
     mavenCentral()
 }
 
-afterEvaluate {
-    // Remove log pollution until Android support in KMP improves.
-    project.extensions.findByType<KotlinMultiplatformExtension>()?.let { kmpExt ->
-        val sourceSetsToRemove = setOf(
-            "androidTestFixtures",
-            "androidTestFixturesDebug",
-            "androidTestFixturesRelease",
-            "androidAndroidTestRelease"
-        )
-        kmpExt.sourceSets.removeAll {
-            sourceSetsToRemove.contains(it.name)
-        }
-    }
-}
+//afterEvaluate {
+//    // Remove log pollution until Android support in KMP improves.
+//    project.extensions.findByType<KotlinMultiplatformExtension>()?.let { kmpExt ->
+//        val sourceSetsToRemove = setOf(
+//            "androidTestFixtures",
+//            "androidTestFixturesDebug",
+//            "androidTestFixturesRelease",
+//            "androidAndroidTestRelease"
+//        )
+//        kmpExt.sourceSets.removeAll {
+//            sourceSetsToRemove.contains(it.name)
+//        }
+//    }
+//}
 
 plugins {
     kotlin("multiplatform") version "1.8.0"
     kotlin("plugin.serialization") version "1.8.0"
 
-    id("com.android.library")
-
+    id("com.android.library") version "7.4.0"
     id("io.codearte.nexus-staging") version "0.30.0"
+    id("com.dorongold.task-tree") version "2.1.0"
+    id("com.codingfeline.buildkonfig") version "0.13.3"
+    id("dev.zxilly.gradle.keeper") version "0.0.4"
+
     id("maven-publish")
     id("signing")
-
-    id("com.dorongold.task-tree") version "2.1.0"
-
-    id("com.codingfeline.buildkonfig") version "0.13.3"
 }
 
 kotlin {
-    sourceSets.all {
-        languageSettings.apply {
-            languageVersion = "1.7"
-            apiVersion = "1.7"
-        }
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+        vendor.set(JvmVendorSpec.ADOPTIUM)
     }
 
     targets {
         jvm {
-            compilations.all {
-                kotlinOptions.jvmTarget = "1.8"
-            }
             testRuns["test"].executionTask.configure {
                 useJUnitPlatform()
             }
@@ -159,6 +126,30 @@ kotlin {
     }
 }
 
+if (isCI()) {
+    when (System.getenv("GITHUB_EVENT_NAME")) {
+        "release" -> {
+            val tag = System.getenv("GITHUB_REF_NAME")
+            if (tag.isNullOrBlank()) {
+                throw IllegalArgumentException("GITHUB_REF_NAME is not set")
+            }
+            version = tag
+            logger.info("Release: $tag")
+        }
+
+        "push" -> {
+            val commit = System.getenv("GITHUB_SHA")
+            if (commit.isNullOrBlank()) {
+                throw IllegalArgumentException("GITHUB_SHA is not set")
+            }
+            val shortSHA = commit.substring(0, 7)
+            version = "master-$shortSHA-SNAPSHOT"
+        }
+    }
+} else {
+    version = secret.get("library.version") ?: "SNAPSHOT"
+}
+
 buildkonfig {
     packageName = "dev.zxilly.notify.sdk"
 
@@ -167,38 +158,38 @@ buildkonfig {
     }
 }
 
-val hostOs: String = System.getProperty("os.name")
-val isMacosX64 = hostOs == "Mac OS X"
-val isLinuxX64 = hostOs == "Linux"
+//val hostOs: String = System.getProperty("os.name")
+//val isMacosX64 = hostOs == "Mac OS X"
+//val isLinuxX64 = hostOs == "Linux"
+//
+//fun tryDisableMacosNative(task: Task) {
+//    if (task.name.contains("macos", true)) {
+//        task.enabled = false
+//        task.onlyIf { false }
+//    }
+//}
+//
+//fun tryDisableLinuxNative(task: Task) {
+//    if (task.name.contains("linux", true)) {
+//        task.enabled = false
+//        task.onlyIf { false }
+//    }
+//}
 
-fun tryDisableMacosNative(task: Task) {
-    if (task.name.contains("macos", true)) {
-        task.enabled = false
-        task.onlyIf { false }
-    }
-}
-
-fun tryDisableLinuxNative(task: Task) {
-    if (task.name.contains("linux", true)) {
-        task.enabled = false
-        task.onlyIf { false }
-    }
-}
-
-project.gradle.taskGraph.whenReady {
-    project.tasks.forEach {
-        if (it.name.contains("lint")) {
-            it.enabled = false
-        }
-        if (System.getenv("TEST") != null) {
-            if (isMacosX64) {
-                tryDisableLinuxNative(it)
-            } else if (isLinuxX64) {
-                tryDisableMacosNative(it)
-            }
-        }
-    }
-}
+//project.gradle.taskGraph.whenReady {
+//    project.tasks.forEach {
+//        if (it.name.contains("lint")) {
+//            it.enabled = false
+//        }
+//        if (System.getenv("TEST") != null) {
+//            if (isMacosX64) {
+//                tryDisableLinuxNative(it)
+//            } else if (isLinuxX64) {
+//                tryDisableMacosNative(it)
+//            }
+//        }
+//    }
+//}
 
 android {
     compileSdk = 33
@@ -206,7 +197,6 @@ android {
     namespace = "dev.zxilly.notify.sdk"
     defaultConfig {
         minSdk = 24
-        targetSdk = 33
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -225,44 +215,28 @@ android {
     }
 }
 
-fun String.mapToEnv(): String {
-    return this.toUpperCase().replace(".", "_")
-}
+//fun String.mapToEnv(): String {
+//    return this.toUpperCase().replace(".", "_")
+//}
 
 fun isCI() = System.getenv("CI") != null
 
-fun getKey(key: String, base64: Boolean = false, strict: Boolean = false): String {
-    var value: String? = if (isCI()) {
-        System.getenv(key.mapToEnv())
-    } else {
-        props.getProperty(key)
-    }
-    if (value == null) {
-        val warn = "$key is not defined"
-        if (strict) {
-            throw GradleException(warn)
-        } else {
-            logger.warn(warn)
-            value = ""
-        }
-    }
-    return if (base64) {
-        // decode base64
-        Base64.getDecoder().decode(value).toString(Charsets.UTF_8)
-    } else {
-        value
-    }
+keeper {
+    expectValue = isCI()
+
+    environment(true)
 }
 
-val mavenCentralUser = getKey("maven.user")
-val mavenCentralPassword = getKey("maven.password")
+val mavenCentralUser = secret.get("maven.user")
+val mavenCentralPassword = secret.get("maven.password")
 val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
 val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 
-val mavenCentralReleaseUrl = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+val mavenCentralReleaseUrl =
+    if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
 
-val githubUser = getKey("github.user").takeIf { it.isBlank() } ?: "ZNotify"
-val githubToken = getKey("github.token")
+val githubUser = secret.get("github.user")
+val githubToken = secret.get("github.token")
 
 val githubPackageRegistryUrl = uri("https://maven.pkg.github.com/ZNotify/kt-sdk")
 
@@ -327,8 +301,8 @@ publishing {
 }
 
 signing {
-    val signingKey = getKey("signing.key", true)
-    val signingPassword = getKey("signing.password")
+    val signingKey = secret.getBase64("signing.key")
+    val signingPassword = secret.get("signing.password")
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
 }
