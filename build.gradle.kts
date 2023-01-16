@@ -42,7 +42,7 @@ plugins {
     id("io.codearte.nexus-staging") version "0.30.0"
     id("com.dorongold.task-tree") version "2.1.0"
     id("com.codingfeline.buildkonfig") version "0.13.3"
-    id("dev.zxilly.gradle.keeper") version "0.0.4"
+    id("dev.zxilly.gradle.keeper") version "0.0.5"
 
     id("maven-publish")
     id("signing")
