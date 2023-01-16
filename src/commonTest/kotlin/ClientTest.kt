@@ -33,7 +33,7 @@ class ClientTest {
             fail(it.stackTraceToString())
         }
         val ret = client.send(MessageOption("test"))
-        assertTrue { ret.isSuccess }
+        assertTrue(ret.exceptionOrNull()?.stackTraceToString()) { ret.isSuccess }
         assertTrue { ret.getOrNull() is Message }
         assertEquals(ret.getOrNull()!!.content, "test")
     }
@@ -44,7 +44,7 @@ class ClientTest {
             fail(it.stackTraceToString())
         }
         val ret = client.send(MessageOption("test", "test_title"))
-        assertTrue { ret.isSuccess }
+        assertTrue(ret.exceptionOrNull()?.stackTraceToString()) { ret.isSuccess }
         assertTrue { ret.getOrNull() is Message }
         assertEquals(ret.getOrNull()!!.content, "test")
         assertEquals(ret.getOrNull()!!.title, "test_title")
@@ -75,12 +75,12 @@ class ClientTest {
 
         val uuid = "00000000-0000-0000-0000-000000000000"
         val ret2 = client.createDevice(Channel.WebSocket, "", uuid)
-        assertTrue { ret2.isSuccess }
+        assertTrue(ret2.exceptionOrNull()?.stackTraceToString()) { ret2.isSuccess }
         assertTrue { ret2.getOrNull() is Boolean }
         assertTrue { ret2.getOrNull()!! }
 
         val ret3 = client.deleteDevice(uuid)
-        assertTrue { ret3.isSuccess }
+        assertTrue(ret3.exceptionOrNull()?.stackTraceToString()) { ret3.isSuccess }
         assertTrue { ret3.getOrNull() is Boolean }
         assertTrue { ret3.getOrNull()!! }
     }
