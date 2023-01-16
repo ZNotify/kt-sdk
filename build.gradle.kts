@@ -11,6 +11,9 @@ group = "dev.zxilly"
 //    }
 //}
 
+fun isCI() = System.getenv("CI") != null
+fun isPublish() = gradle.startParameter.taskNames.any { it.contains("publish") }
+
 repositories {
     google()
     mavenCentral()
@@ -219,10 +222,8 @@ android {
 //    return this.toUpperCase().replace(".", "_")
 //}
 
-fun isCI() = System.getenv("CI") != null
-
 keeper {
-    expectValue = isCI()
+    expectValue = isPublish()
 
     environment(true)
 }
