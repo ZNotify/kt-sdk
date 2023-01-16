@@ -4,13 +4,6 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec
 
 group = "dev.zxilly"
 
-//val props: Properties = Properties().apply {
-//    val file = File(rootProject.rootDir, "local.properties")
-//    if (file.exists()) {
-//        load(FileInputStream(file))
-//    }
-//}
-
 fun isCI() = System.getenv("CI") != null
 fun isPublish() = gradle.startParameter.taskNames.any { it.contains("publish") }
 
@@ -18,21 +11,6 @@ repositories {
     google()
     mavenCentral()
 }
-
-//afterEvaluate {
-//    // Remove log pollution until Android support in KMP improves.
-//    project.extensions.findByType<KotlinMultiplatformExtension>()?.let { kmpExt ->
-//        val sourceSetsToRemove = setOf(
-//            "androidTestFixtures",
-//            "androidTestFixturesDebug",
-//            "androidTestFixturesRelease",
-//            "androidAndroidTestRelease"
-//        )
-//        kmpExt.sourceSets.removeAll {
-//            sourceSetsToRemove.contains(it.name)
-//        }
-//    }
-//}
 
 plugins {
     kotlin("multiplatform") version "1.8.0"
@@ -79,7 +57,9 @@ kotlin {
         browser()
     }
 
-    android()
+    android {
+        publishAllLibraryVariants()
+    }
     linuxX64()
     macosX64()
     mingwX64()
@@ -172,39 +152,6 @@ buildkonfig {
     }
 }
 
-//val hostOs: String = System.getProperty("os.name")
-//val isMacosX64 = hostOs == "Mac OS X"
-//val isLinuxX64 = hostOs == "Linux"
-//
-//fun tryDisableMacosNative(task: Task) {
-//    if (task.name.contains("macos", true)) {
-//        task.enabled = false
-//        task.onlyIf { false }
-//    }
-//}
-//
-//fun tryDisableLinuxNative(task: Task) {
-//    if (task.name.contains("linux", true)) {
-//        task.enabled = false
-//        task.onlyIf { false }
-//    }
-//}
-
-//project.gradle.taskGraph.whenReady {
-//    project.tasks.forEach {
-//        if (it.name.contains("lint")) {
-//            it.enabled = false
-//        }
-//        if (System.getenv("TEST") != null) {
-//            if (isMacosX64) {
-//                tryDisableLinuxNative(it)
-//            } else if (isLinuxX64) {
-//                tryDisableMacosNative(it)
-//            }
-//        }
-//    }
-//}
-
 android {
     compileSdk = 33
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -229,10 +176,6 @@ android {
     }
 }
 
-//fun String.mapToEnv(): String {
-//    return this.toUpperCase().replace(".", "_")
-//}
-
 val mavenCentralUser = secret.get("maven.user")
 val mavenCentralPassword = secret.get("maven.password")
 val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
@@ -245,10 +188,6 @@ val githubUser = secret.get("github.user")
 val githubToken = secret.get("github.token")
 
 val githubPackageRegistryUrl = uri("https://maven.pkg.github.com/ZNotify/kt-sdk")
-
-//val javadocJar by tasks.registering(Jar::class) {
-//    archiveClassifier.set("javadoc")
-//}
 
 nexusStaging {
     serverUrl = "https://s01.oss.sonatype.org/service/local/"
