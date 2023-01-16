@@ -52,6 +52,7 @@ keeper {
     expectValue = isPublish()
 
     environment(true)
+    properties()
 }
 
 kotlin {
@@ -60,24 +61,25 @@ kotlin {
         vendor.set(JvmVendorSpec.ADOPTIUM)
     }
 
-    targets {
-        jvm {
-            testRuns["test"].executionTask.configure {
-                useJUnitPlatform()
-            }
-        }
-        js(IR) {
-            nodejs()
-            browser()
+    jvm {
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
         }
 
-        android("android") {
-            publishLibraryVariants("release", "debug")
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
         }
-        linuxX64()
-        macosX64()
-        mingwX64()
     }
+
+    js(IR) {
+        nodejs()
+        browser()
+    }
+
+    android()
+    linuxX64()
+    macosX64()
+    mingwX64()
 
     sourceSets {
         val ktorVersion = "2.2.2"
@@ -156,7 +158,7 @@ if (isCI()) {
         }
     }
 } else {
-    version = secret.get("library.version") ?: "SNAPSHOT"
+    version = secret.get("library.version") ?: "local"
 }
 
 buildkonfig {
@@ -241,9 +243,9 @@ val githubToken = secret.get("github.token")
 
 val githubPackageRegistryUrl = uri("https://maven.pkg.github.com/ZNotify/kt-sdk")
 
-val javadocJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("javadoc")
-}
+//val javadocJar by tasks.registering(Jar::class) {
+//    archiveClassifier.set("javadoc")
+//}
 
 nexusStaging {
     serverUrl = "https://s01.oss.sonatype.org/service/local/"
@@ -274,8 +276,6 @@ publishing {
     }
 
     publications.withType<MavenPublication> {
-        artifact(javadocJar.get())
-
         pom {
             name.set("ZNotify Kotlin SDK")
             description.set("Kotlin multi platform sdk for ZNotify")
@@ -305,5 +305,8 @@ signing {
     val signingKey = secret.getBase64("signing.key")
     val signingPassword = secret.get("signing.password")
     useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications)
+    for (pub in publishing.publications) {
+        sign(pub)
+    }
 }
+
