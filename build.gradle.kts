@@ -52,7 +52,10 @@ keeper {
     expectValue = isPublish()
 
     environment(true)
-    properties()
+
+    if (!isCI()) {
+        properties()
+    }
 }
 
 kotlin {
