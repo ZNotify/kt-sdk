@@ -48,6 +48,12 @@ plugins {
     id("signing")
 }
 
+keeper {
+    expectValue = isPublish()
+
+    environment(true)
+}
+
 kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(8))
@@ -221,12 +227,6 @@ android {
 //fun String.mapToEnv(): String {
 //    return this.toUpperCase().replace(".", "_")
 //}
-
-keeper {
-    expectValue = isPublish()
-
-    environment(true)
-}
 
 val mavenCentralUser = secret.get("maven.user")
 val mavenCentralPassword = secret.get("maven.password")
