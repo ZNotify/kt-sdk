@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage", "UNUSED_VARIABLE")
 
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 group = "dev.zxilly"
 
@@ -257,3 +258,10 @@ signing {
     sign(publishing.publications)
 }
 
+tasks.register("kotlinVersion"){
+    doLast {
+        println("Kotlin version: ${KotlinCompilerVersion.VERSION}")
+        buildDir.mkdir()
+        buildDir.resolve("kotlinVersion.txt").writeText(KotlinCompilerVersion.VERSION)
+    }
+}

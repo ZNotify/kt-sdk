@@ -31,6 +31,17 @@ jobs:
 
       - uses: ZNotify/test-server-action@master
 
+      - name: Get Kotlin version
+        uses: gradle/gradle-build-action@main
+        with:
+          arguments: kotlinVersion
+
+      - name: Cache KotlinNative
+        uses: actions/cache@v2
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('build/kotlinVersion.txt') }}
+
       - name: Build with Gradle
         uses: gradle/gradle-build-action@main
         with:
