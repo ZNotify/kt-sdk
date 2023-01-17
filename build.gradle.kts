@@ -58,7 +58,7 @@ kotlin {
     }
 
     android {
-        publishAllLibraryVariants()
+        publishLibraryVariants("release", "debug")
     }
     linuxX64()
     macosX64()
@@ -165,13 +165,10 @@ android {
     }
 
     publishing {
-        singleVariant("release") {
-            withSourcesJar()
+        multipleVariants {
+            allVariants()
             withJavadocJar()
-        }
-        singleVariant("debug") {
             withSourcesJar()
-            withJavadocJar()
         }
     }
 }
@@ -197,6 +194,10 @@ nexusStaging {
     stagingProfileId = "95214448af0738"
 }
 
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
 publishing {
     repositories {
         maven {
@@ -215,9 +216,15 @@ publishing {
                 password = githubToken
             }
         }
+        maven {
+            name = "local"
+            url = uri("build/repo")
+        }
     }
 
     publications.withType<MavenPublication> {
+        artifact(javadocJar.get())
+
         pom {
             name.set("ZNotify Kotlin SDK")
             description.set("Kotlin multi platform sdk for ZNotify")
@@ -247,8 +254,6 @@ signing {
     val signingKey = secret.getBase64("signing.key")
     val signingPassword = secret.get("signing.password")
     useInMemoryPgpKeys(signingKey, signingPassword)
-    for (pub in publishing.publications) {
-        sign(pub)
-    }
+    sign(publishing.publications)
 }
 
