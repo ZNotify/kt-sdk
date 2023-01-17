@@ -37,7 +37,7 @@ jobs:
           arguments: kotlinVersion
 
       - name: Cache KotlinNative
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.konan
           key: ${{ runner.os }}-konan-${{ hashFiles('build/kotlinVersion.txt') }}
