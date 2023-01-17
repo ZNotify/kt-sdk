@@ -18,7 +18,7 @@ plugins {
     kotlin("plugin.serialization") version "1.8.0"
 
     id("com.android.library") version "7.4.0"
-    id("io.codearte.nexus-staging") version "0.30.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("com.dorongold.task-tree") version "2.1.1"
     id("com.codingfeline.buildkonfig") version "0.13.3"
     id("dev.zxilly.gradle.keeper") version "0.0.5"
@@ -176,23 +176,22 @@ android {
 
 val mavenCentralUser = secret.get("maven.user")
 val mavenCentralPassword = secret.get("maven.password")
-val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-
-val mavenCentralReleaseUrl =
-    if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
 
 val githubUser = secret.get("github.user")
 val githubToken = secret.get("github.token")
 
 val githubPackageRegistryUrl = uri("https://maven.pkg.github.com/ZNotify/kt-sdk")
 
-nexusStaging {
-    serverUrl = "https://s01.oss.sonatype.org/service/local/"
-    username = mavenCentralUser
-    password = mavenCentralPassword
-    packageGroup = "dev.zxilly"
-    stagingProfileId = "95214448af0738"
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username.set(mavenCentralUser)
+            password.set(mavenCentralPassword)
+            packageGroup.set("dev.zxilly")
+        }
+    }
 }
 
 val javadocJar by tasks.registering(Jar::class) {
@@ -201,14 +200,6 @@ val javadocJar by tasks.registering(Jar::class) {
 
 publishing {
     repositories {
-        maven {
-            name = "sonatype"
-            url = mavenCentralReleaseUrl
-            credentials {
-                username = mavenCentralUser
-                password = mavenCentralPassword
-            }
-        }
         maven {
             name = "github"
             url = githubPackageRegistryUrl

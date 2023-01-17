@@ -45,5 +45,5 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@main
         with:
-          arguments: build publishAllPublicationsToSonatypeRepository closeAndReleaseRepository publishAllPublicationsToGithubRepository --scan
+          arguments: build publishAllPublicationsToSonatypeRepository closeAndReleaseSonatypeStagingRepository publishAllPublicationsToGithubRepository --scan
 
