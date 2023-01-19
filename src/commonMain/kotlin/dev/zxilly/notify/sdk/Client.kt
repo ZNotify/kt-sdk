@@ -37,6 +37,12 @@ class Client private constructor(
         install(UserAgent) {
             agent = "znotify-kt-sdk/${BuildKonfig.VERSION}"
         }
+
+        install(HttpTimeout) {
+            requestTimeoutMillis = 5000
+            connectTimeoutMillis = 3000
+            socketTimeoutMillis = 5000
+        }
     }
 
     private suspend inline fun check() {

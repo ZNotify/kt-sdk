@@ -9,9 +9,14 @@ import kotlin.test.fail
 object TestUtils {
     suspend fun check() {
         try {
-            with(HttpClient(){
+            with(HttpClient {
                 install(UserAgent) {
                     agent = "Kotlin SDK test util"
+                }
+                install(HttpTimeout) {
+                    requestTimeoutMillis = 5000
+                    connectTimeoutMillis = 3000
+                    socketTimeoutMillis = 5000
                 }
             }.get("$defaultEndpoint/alive")) {
                 if (status != HttpStatusCode.NoContent) {
