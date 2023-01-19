@@ -1,6 +1,7 @@
 package dev.zxilly.notify.sdk
 
 import dev.zxilly.notify.sdk.entity.*
+import dev.zxilly.notify.sdk.internal.currentPlatform
 import dev.zxilly.notify.sdk.resource.Check
 import dev.zxilly.notify.sdk.resource.User
 import io.ktor.client.*
@@ -35,7 +36,7 @@ class Client private constructor(
 
         // set useragent
         install(UserAgent) {
-            agent = "znotify-kt-sdk/${BuildKonfig.VERSION}"
+            agent = "znotify-kt-sdk/${BuildKonfig.VERSION} ($currentPlatform)"
         }
 
         install(HttpTimeout) {
