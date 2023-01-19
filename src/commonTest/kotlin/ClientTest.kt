@@ -1,18 +1,17 @@
 import dev.zxilly.notify.sdk.Client
 import dev.zxilly.notify.sdk.entity.Channel
-import dev.zxilly.notify.sdk.entity.MessageOption
 import dev.zxilly.notify.sdk.entity.Message
+import dev.zxilly.notify.sdk.entity.MessageOption
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlin.test.expect
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class ClientTest {
-    @BeforeTest
-    fun testServer() = runTest {
-        TestUtils.check()
-    }
-
     @Test
     fun testCreate() = runTest {
         val ret = Client.create("test")
@@ -83,5 +82,13 @@ class ClientTest {
         assertTrue(ret3.exceptionOrNull()?.stackTraceToString()) { ret3.isSuccess }
         assertTrue { ret3.getOrNull() is Boolean }
         assertTrue { ret3.getOrNull()!! }
+    }
+
+    companion object {
+        init {
+            runTest {
+                TestUtils.check()
+            }
+        }
     }
 }

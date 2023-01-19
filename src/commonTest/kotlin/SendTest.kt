@@ -1,20 +1,14 @@
-import dev.zxilly.notify.sdk.send
-import dev.zxilly.notify.sdk.entity.MessageOption
 import dev.zxilly.notify.sdk.entity.Message
+import dev.zxilly.notify.sdk.entity.MessageOption
+import dev.zxilly.notify.sdk.send
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SendTest {
-    @BeforeTest
-    fun testServer() = runTest {
-        TestUtils.check()
-    }
-
     @Test
     fun testCreateFailed() = runTest {
         val ret = send("error", "test")
@@ -44,5 +38,13 @@ class SendTest {
         val ret = send("test", MessageOption(""))
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
+    }
+
+    companion object {
+        init {
+            runTest {
+                TestUtils.check()
+            }
+        }
     }
 }

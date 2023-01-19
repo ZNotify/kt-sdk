@@ -21,6 +21,8 @@ object TestUtils {
             }.get("$defaultEndpoint/alive")) {
                 if (status != HttpStatusCode.NoContent) {
                     fail("Test server is not running")
+                } else {
+                    println("Test server is running")
                 }
             }
         } catch (e: Exception) {
