@@ -31,7 +31,7 @@ val isUnitTest by lazy {
 val defaultEndpoint: String
     get() {
         return if (isUnitTest) {
-            "http://localhost:14444"
+            "http://127.0.0.1:14444"
         } else {
             "https://push.learningman.top"
         }
