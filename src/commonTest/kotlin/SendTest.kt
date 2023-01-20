@@ -39,12 +39,4 @@ class SendTest {
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
     }
-
-    companion object {
-        init {
-            runTest {
-                TestUtils.check()
-            }
-        }
-    }
 }

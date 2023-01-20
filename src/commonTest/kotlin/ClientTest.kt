@@ -83,12 +83,4 @@ class ClientTest {
         assertTrue { ret3.getOrNull() is Boolean }
         assertTrue { ret3.getOrNull()!! }
     }
-
-    companion object {
-        init {
-            runTest {
-                TestUtils.check()
-            }
-        }
-    }
 }
