@@ -40,9 +40,16 @@ class Client private constructor(
         }
 
         install(HttpTimeout) {
-            requestTimeoutMillis = 5000
+            requestTimeoutMillis = 3000
             connectTimeoutMillis = 3000
             socketTimeoutMillis = 5000
+        }
+
+        install(HttpRequestRetry){
+            maxRetries = 3
+            retryOnExceptionIf { _, cause ->
+                cause is HttpRequestTimeoutException
+            }
         }
     }
 
