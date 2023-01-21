@@ -14,8 +14,10 @@ repositories {
 }
 
 plugins {
-    kotlin("multiplatform") version "1.8.0"
-    kotlin("plugin.serialization") version "1.8.0"
+    val ktVersion = "1.8.0"
+
+    kotlin("multiplatform") version ktVersion
+    kotlin("plugin.serialization") version ktVersion
 
     id("com.android.library") version "7.4.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
@@ -37,12 +39,12 @@ keeper {
     }
 }
 
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-        vendor.set(JvmVendorSpec.ADOPTIUM)
-    }
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
+kotlin {
     jvm {
         testRuns["test"].executionTask.configure {
             useJUnitPlatform()
@@ -60,6 +62,11 @@ kotlin {
 
     android {
         publishLibraryVariants("release", "debug")
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
     }
     linuxX64()
     macosX64()
@@ -249,7 +256,7 @@ signing {
     sign(publishing.publications)
 }
 
-tasks.register("kotlinVersion"){
+tasks.register("kotlinVersion") {
     doLast {
         println("Kotlin version: ${KotlinCompilerVersion.VERSION}")
         buildDir.mkdir()
