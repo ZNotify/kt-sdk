@@ -3,15 +3,26 @@ import dev.zxilly.notify.sdk.entity.Channel
 import dev.zxilly.notify.sdk.entity.Message
 import dev.zxilly.notify.sdk.entity.MessageOption
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.expect
-import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 class ClientTest {
+    private val lock = Mutex()
+    private var clientCache: Client? = null
+    private suspend fun getClient(): Client {
+        lock.lock()
+        if (clientCache == null) {
+            clientCache = Client.create("test").getOrNull()!!
+        }
+        lock.unlock()
+        return clientCache!!
+    }
+
     @Test
     fun testCreate() = runTest {
         val ret = Client.create("test")
@@ -28,9 +39,7 @@ class ClientTest {
 
     @Test
     fun checkSendMessage() = runTest {
-        val client = Client.create("test").getOrElse {
-            fail(it.stackTraceToString())
-        }
+        val client = getClient()
         val ret = client.send(MessageOption("test"))
         assertTrue(ret.exceptionOrNull()?.stackTraceToString()) { ret.isSuccess }
         assertTrue { ret.getOrNull() is Message }
@@ -39,9 +48,7 @@ class ClientTest {
 
     @Test
     fun checkSendMessage2() = runTest {
-        val client = Client.create("test").getOrElse {
-            fail(it.stackTraceToString())
-        }
+        val client = getClient()
         val ret = client.send(MessageOption("test", "test_title"))
         assertTrue(ret.exceptionOrNull()?.stackTraceToString()) { ret.isSuccess }
         assertTrue { ret.getOrNull() is Message }
@@ -51,20 +58,15 @@ class ClientTest {
 
     @Test
     fun checkSendMessageFailed() = runTest {
-        val client = Client.create("test").getOrElse {
-            fail(it.stackTraceToString())
-        }
+        val client = getClient()
         val ret = client.send(MessageOption(""))
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
-
     }
 
     @Test
     fun checkRegister() = runTest {
-        val client = Client.create("test").getOrElse {
-            fail(it.stackTraceToString())
-        }
+        val client = getClient()
         val ret = client.createDevice(Channel.FCM, "test", "test")
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
