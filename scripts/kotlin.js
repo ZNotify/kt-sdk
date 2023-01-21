@@ -9,5 +9,5 @@ const version = match[1];
 
 console.log(version);
 
-// write to build/kotlinVersion.txt
-fs.writeFileSync(path.join(__dirname, '../build/kotlinVersion.txt'), version);
+fs.mkdirSync(path.join(__dirname, '../build'), { recursive: true });
+fs.writeFileSync(path.join(__dirname, '../build/kotlinVersion.txt'), version, 'utf8');
