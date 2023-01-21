@@ -53,7 +53,7 @@ class Client private constructor(
         }
     }
 
-    private suspend inline fun check() {
+    private suspend fun check() {
         val resp = client.get(Check(userSecret))
         val ret: Response<Boolean> = resp.body()
         if (!ret.body) {

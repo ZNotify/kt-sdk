@@ -39,6 +39,7 @@ internal class ClientTest {
         val ret = Client.create("error", testEndpoint)
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
+        assertEquals("User secret not valid", ret.exceptionOrNull()?.message)
     }
 
     @Test
