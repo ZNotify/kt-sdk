@@ -31,6 +31,7 @@ jobs:
           cache: 'gradle'
 
       - name: Get Kotlin version
+        shell: bash
         run: node scripts/kotlin.js
 
       - name: Cache KotlinNative
@@ -39,7 +40,8 @@ jobs:
           path: ~/.konan
           key: ${{ runner.os }}-konan-${{ hashFiles('build/kotlinVersion.txt') }}
 
-      - name: Run unit tests
-        uses: gradle/gradle-build-action@main
+      - uses: burrunan/gradle-cache-action@v1
+        name: Check
         with:
+          concurrent: true
           arguments: check --scan
