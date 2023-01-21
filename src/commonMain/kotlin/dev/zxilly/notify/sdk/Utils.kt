@@ -16,26 +16,7 @@ val ok: HttpResponse.() -> Boolean = {
 
 val emptyContentError = Error("Content is empty")
 
-val isUnitTest by lazy {
-    try {
-        throw Error("test")
-    } catch (e: Throwable) {
-        return@lazy e.stackTraceToString()
-            .split("\n")
-            .any {
-                it.contains("Test")
-            }
-    }
-}
-
-val defaultEndpoint: String
-    get() {
-        return if (isUnitTest) {
-            "http://127.0.0.1:14444"
-        } else {
-            "https://push.learningman.top"
-        }
-    }
+const val defaultEndpoint = "https://push.learningman.top"
 
 fun String.removeSuffixSlash(): String {
     return if (this.endsWith("/")) {

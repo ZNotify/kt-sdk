@@ -1,4 +1,5 @@
-import dev.zxilly.notify.sdk.Client
+package dev.zxilly.notify.sdk
+
 import dev.zxilly.notify.sdk.entity.Channel
 import dev.zxilly.notify.sdk.entity.Message
 import dev.zxilly.notify.sdk.entity.MessageOption
@@ -9,15 +10,18 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.expect
+import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
-class ClientTest {
+internal class ClientTest {
     private val lock = Mutex()
     private var clientCache: Client? = null
     private suspend fun getClient(): Client {
         lock.lock()
         if (clientCache == null) {
-            clientCache = Client.create("test").getOrNull()!!
+            clientCache = Client.create("test", testEndpoint).getOrElse {
+                fail(it.stackTraceToString())
+            }
         }
         lock.unlock()
         return clientCache!!
@@ -25,14 +29,14 @@ class ClientTest {
 
     @Test
     fun testCreate() = runTest {
-        val ret = Client.create("test")
+        val ret = Client.create("test", testEndpoint)
         assertTrue { ret.isSuccess }
         assertTrue { ret.getOrNull() is Client }
     }
 
     @Test
     fun testCreateFailed() = runTest {
-        val ret = Client.create("error")
+        val ret = Client.create("error", testEndpoint)
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
     }
