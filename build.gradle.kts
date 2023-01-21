@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage", "UNUSED_VARIABLE")
 
 import com.codingfeline.buildkonfig.compiler.FieldSpec
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 group = "dev.zxilly"
 
@@ -40,7 +39,7 @@ keeper {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
@@ -96,12 +95,12 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-cio:$ktorVersion")
+                implementation("io.ktor:ktor-client-java:$ktorVersion")
             }
         }
         val macosX64Main by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-cio:$ktorVersion")
+                implementation("io.ktor:ktor-client-darwin:$ktorVersion")
             }
         }
         val jsMain by getting {
@@ -254,12 +253,4 @@ signing {
     val signingPassword = secret.get("signing.password")
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
-}
-
-tasks.register("kotlinVersion") {
-    doLast {
-        println("Kotlin version: ${KotlinCompilerVersion.VERSION}")
-        buildDir.mkdir()
-        buildDir.resolve("kotlinVersion.txt").writeText(KotlinCompilerVersion.VERSION)
-    }
 }
