@@ -17,7 +17,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
-class Client private constructor(
+class Client internal constructor(
     private val userSecret: String,
     private val endpoint: String
 ) {

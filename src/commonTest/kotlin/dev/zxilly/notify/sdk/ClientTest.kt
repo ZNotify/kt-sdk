@@ -4,28 +4,14 @@ import dev.zxilly.notify.sdk.entity.Channel
 import dev.zxilly.notify.sdk.entity.Message
 import dev.zxilly.notify.sdk.entity.MessageOption
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.expect
-import kotlin.test.fail
 
 @ExperimentalCoroutinesApi
 internal class ClientTest {
-    private val lock = Mutex()
-    private var clientCache: Client? = null
-    private suspend fun getClient(): Client {
-        lock.lock()
-        if (clientCache == null) {
-            clientCache = Client.create("test", testEndpoint).getOrElse {
-                fail(it.stackTraceToString())
-            }
-        }
-        lock.unlock()
-        return clientCache!!
-    }
 
     @Test
     fun testCreate() = runTest {
@@ -44,7 +30,6 @@ internal class ClientTest {
 
     @Test
     fun checkSendMessage() = runTest {
-        val client = getClient()
         val ret = client.send(MessageOption("test"))
         assertTrue(ret.exceptionOrNull()?.stackTraceToString()) { ret.isSuccess }
         assertTrue { ret.getOrNull() is Message }
@@ -53,7 +38,6 @@ internal class ClientTest {
 
     @Test
     fun checkSendMessage2() = runTest {
-        val client = getClient()
         val ret = client.send(MessageOption("test", "test_title"))
         assertTrue(ret.exceptionOrNull()?.stackTraceToString()) { ret.isSuccess }
         assertTrue { ret.getOrNull() is Message }
@@ -63,7 +47,6 @@ internal class ClientTest {
 
     @Test
     fun checkSendMessageFailed() = runTest {
-        val client = getClient()
         val ret = client.send(MessageOption(""))
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
@@ -71,7 +54,6 @@ internal class ClientTest {
 
     @Test
     fun checkRegister() = runTest {
-        val client = getClient()
         val ret = client.createDevice(Channel.FCM, "test", "test")
         assertTrue { ret.isFailure }
         assertTrue { ret.exceptionOrNull() is Throwable }
@@ -89,5 +71,9 @@ internal class ClientTest {
         assertTrue(ret3.exceptionOrNull()?.stackTraceToString()) { ret3.isSuccess }
         assertTrue { ret3.getOrNull() is Boolean }
         assertTrue { ret3.getOrNull()!! }
+    }
+
+    companion object{
+        private val client = Client("test", testEndpoint)
     }
 }
