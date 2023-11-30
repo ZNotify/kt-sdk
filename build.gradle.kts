@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage", "UNUSED_VARIABLE")
+@file:Suppress("UnstableApiUsage")
 
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 
@@ -13,7 +13,7 @@ repositories {
 }
 
 plugins {
-    val ktVersion = "1.8.20"
+    val ktVersion = "1.9.10"
 
     kotlin("multiplatform") version ktVersion
     kotlin("plugin.serialization") version ktVersion
@@ -54,12 +54,12 @@ kotlin {
         }
     }
 
-    js(IR) {
+    js {
         nodejs()
         browser()
     }
 
-    android {
+    androidTarget {
         publishLibraryVariants("release", "debug")
         compilations.all {
             kotlinOptions {
