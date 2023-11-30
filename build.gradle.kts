@@ -208,6 +208,18 @@ tasks.withType<AbstractPublishToMaven>().configureEach {
     dependsOn(dependsOnTasks)
 }
 
+tasks.withType<Sign>().configureEach {
+    val pubName = name.removePrefix("sign").removeSuffix("Publication")
+
+    tasks.findByName("linkDebugTest$pubName")?.let {
+        mustRunAfter(it)
+    }
+
+    tasks.findByName("compileTestKotlin$pubName")?.let {
+        mustRunAfter(it)
+    }
+}
+
 publishing {
     repositories {
         maven {
