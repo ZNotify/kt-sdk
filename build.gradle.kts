@@ -174,6 +174,8 @@ android {
     publishing {
         multipleVariants {
             allVariants()
+            withJavadocJar()
+            withSourcesJar()
         }
     }
 
@@ -220,6 +222,10 @@ tasks.withType<Sign>().configureEach {
     }
 }
 
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
 publishing {
     repositories {
         maven {
@@ -237,6 +243,8 @@ publishing {
     }
 
     publications.withType<MavenPublication> {
+        artifact(javadocJar.get())
+
         pom {
             name.set("ZNotify Kotlin SDK")
             description.set("Kotlin multi platform sdk for ZNotify")
