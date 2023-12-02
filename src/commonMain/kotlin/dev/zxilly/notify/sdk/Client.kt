@@ -161,7 +161,7 @@ class Client internal constructor(
         (resp.body() as Response<Boolean>).body
     }
 
-    suspend fun <T> getMessages() = wrap {
+    suspend fun getMessages() = wrap {
         val resp = client.get(User.Messages(User(userSecret)))
         if (!resp.ok()) {
             throw Error("Fetch failed\n${resp.bodyAsText()}")
