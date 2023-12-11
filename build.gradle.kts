@@ -72,7 +72,7 @@ kotlin {
     mingwX64()
 
     sourceSets {
-        val ktorVersion = "2.3.6"
+        val ktorVersion = "2.3.7"
         val serializationVersion = "1.5.1"
         val coroutinesVersion = "1.7.3"
 
