@@ -74,7 +74,7 @@ kotlin {
     sourceSets {
         val ktorVersion = "2.3.9"
         val serializationVersion = "1.6.3"
-        val coroutinesVersion = "1.8.0"
+        val coroutinesVersion = "1.8.1"
 
         val commonMain by getting {
             dependencies {
