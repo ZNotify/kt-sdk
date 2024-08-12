@@ -13,7 +13,7 @@ repositories {
 }
 
 plugins {
-    val ktVersion = "2.0.0"
+    val ktVersion = "2.0.10"
 
     kotlin("multiplatform") version ktVersion
     kotlin("plugin.serialization") version ktVersion
