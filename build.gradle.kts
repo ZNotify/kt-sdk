@@ -18,7 +18,7 @@ plugins {
     kotlin("multiplatform") version ktVersion
     kotlin("plugin.serialization") version ktVersion
 
-    id("com.android.library") version "8.3.2"
+    id("com.android.library") version "8.7.2"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("com.dorongold.task-tree") version "3.0.0"
     id("com.codingfeline.buildkonfig") version "0.15.2"
