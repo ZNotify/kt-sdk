@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "dev.zxilly"
 
@@ -18,7 +19,7 @@ plugins {
     kotlin("multiplatform") version ktVersion
     kotlin("plugin.serialization") version ktVersion
 
-    id("com.android.library") version "8.3.2"
+    id("com.android.library") version "8.13.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("com.dorongold.task-tree") version "4.0.1"
     id("com.codingfeline.buildkonfig") version "0.17.1"
@@ -49,8 +50,8 @@ kotlin {
             useJUnitPlatform()
         }
 
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
 
@@ -61,10 +62,8 @@ kotlin {
 
     androidTarget {
         publishLibraryVariants("release", "debug")
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
     linuxX64()
