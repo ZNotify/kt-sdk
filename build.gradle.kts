@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "dev.zxilly"
 
@@ -13,7 +14,7 @@ repositories {
 }
 
 plugins {
-    val ktVersion = "2.1.21"
+    val ktVersion = "2.2.10"
 
     kotlin("multiplatform") version ktVersion
     kotlin("plugin.serialization") version ktVersion
@@ -22,7 +23,7 @@ plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("com.dorongold.task-tree") version "4.0.1"
     id("com.codingfeline.buildkonfig") version "0.17.1"
-    id("dev.zxilly.gradle.keeper") version "0.0.5"
+    id("dev.zxilly.gradle.keeper") version "0.1.0"
 
     id("maven-publish")
     id("signing")
@@ -49,8 +50,8 @@ kotlin {
             useJUnitPlatform()
         }
 
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
 
@@ -61,10 +62,8 @@ kotlin {
 
     androidTarget {
         publishLibraryVariants("release", "debug")
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
     linuxX64()
@@ -72,8 +71,8 @@ kotlin {
     mingwX64()
 
     sourceSets {
-        val ktorVersion = "3.2.3"
-        val serializationVersion = "1.8.1"
+        val ktorVersion = "3.3.0"
+        val serializationVersion = "1.9.0"
         val coroutinesVersion = "1.10.2"
 
         val commonMain by getting {
@@ -271,7 +270,7 @@ publishing {
 }
 
 signing {
-    val signingKey = secret.getBase64("signing.key")
+    val signingKey = secret.get("signing.key", dev.zxilly.gradle.keeper.decoders.Base64Decoder())
     val signingPassword = secret.get("signing.password")
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
